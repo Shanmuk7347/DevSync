@@ -14,7 +14,20 @@ export default function Forgot() {
           shadow-md
           px-6
         ">
-        <input placeholder='Enter mail id'/>
+        <input
+          name="Usermail"
+          type="text"
+          placeholder="Enter User Email"
+          className="
+            w-full h-11
+            bg-black/5
+            rounded-md
+            text-center
+            focus:outline-none
+            focus:ring-2 focus:ring-sky-500
+          "
+          required
+        />
 
       </form>
       
