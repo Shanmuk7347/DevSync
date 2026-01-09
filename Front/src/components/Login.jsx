@@ -5,7 +5,7 @@ export default function Login() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen flex items-center justify-center px-4 bg-sky-500">
       <form
         className="
           relative bg-white
@@ -18,6 +18,9 @@ export default function Login() {
           shadow-md
           px-6
         "
+        onSubmit={()=>(
+          navigate("/components/dash")
+        )}
       >
        
         <button

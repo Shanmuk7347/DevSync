@@ -5,7 +5,7 @@ export default function Forgot() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen k flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen k flex items-center justify-center px-4 py-12 bg-sky-500">
       
       <div className="absolute inset-0 bg-black opacity-30"></div>
 

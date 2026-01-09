@@ -4,7 +4,7 @@ import flower from "../images/flower.jpeg";
 
 export default function Home() {
   return (
-    <div className="min-h-screen  flex flex-col lg:flex-row items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen  flex flex-col lg:flex-row items-center justify-center relative overflow-hidden bg-sky-500">
       <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-12 lg:py-0 lg:px-12 z-10">
         <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold text-white leading-tight">
           Find Developers
@@ -16,7 +16,7 @@ export default function Home() {
           with <span className="text-white font-bold">Dev-Sync</span>
         </p>
 
-        <div className="hidden lg:flex flex-col sm:flex-row gap-6 mt-12">
+        <div className="hidden lg:flex flex-col sm:flex-row gap-6 mt-12 z-10">
           <Link to="/components/login">
             <button className="px-10 py-4 bg-black text-white font-semibold rounded-lg hover:bg-black-200 transition transform hover:scale-105 shadow-xl">
               Login
@@ -53,7 +53,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="absolute inset-0 bg-black opacity-20 -z-0"></div>
+      <div className="absolute inset-0 bg-black opacity-20 -z-10"></div>
     </div>
   );
 }
