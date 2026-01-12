@@ -53,12 +53,7 @@ export default function Register() {
           type="text"
           placeholder="Enter User Email"
           className="
-            w-full h-11
-            bg-black/5
-            rounded-md
-            text-center
-            focus:outline-none
-            focus:ring-2 focus:ring-sky-500
+           input 
           "
           required
         />
@@ -69,12 +64,7 @@ export default function Register() {
           type="password"
           placeholder="Enter Password"
           className="
-            w-full h-11
-            bg-black/5
-            rounded-md
-            text-center
-            focus:outline-none
-            focus:ring-2 focus:ring-sky-500
+           input 
           "
            required
         />
@@ -83,12 +73,7 @@ export default function Register() {
           type="password"
           placeholder="Confirm Password"
           className="
-            w-full h-11
-            bg-black/5
-            rounded-md
-            text-center
-            focus:outline-none
-            focus:ring-2 focus:ring-sky-500
+          input
           "
            required
         />

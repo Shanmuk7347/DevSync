@@ -51,7 +51,7 @@ export default function Dash() {
           </div>
           <div
             style={{ backgroundImage: `url(${dash})` }}
-            className="relative bg-cover bg-center h-[90vh] m-1.5 mb-0 rounded-t-xl pl-1"
+            className="relative bg-cover flex items-center justify-center bg-center h-[90vh] m-1.5 mb-0 rounded-t-xl pl-1"
           >
             <Routes>
               <Route index element={<Navigate to="homedash"/>}/>
