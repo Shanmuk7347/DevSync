@@ -1,10 +1,11 @@
 import React from "react";
-import {Routes,Route,Navigate} from "react-router-dom"
+import {Routes,Route,Navigate,Link} from "react-router-dom"
 import Homedash from "./homedash";
 import favicon from "../images/favicon.png";
 import dash from "../images/dashbg.png";
 import Createproject from "./createproject";
-
+import Viewall from "./viewall";
+import Message from "./message";
 
 export default function Dash() {
   return (
@@ -27,12 +28,12 @@ export default function Dash() {
             <img src={favicon} alt="Logo" className="w-[1.5rem]sm:w-[2.rem] h-[4.7vh] " />
           </div>
           <div className="bg-white h-[85vh] w-[1.8rem] rounded-md flex flex-col gap-4 items-center pt-5">
-            <i className="fa-regular fa-house icon"></i>
+            <Link to="/components/dash/homedash"><i className="fa-regular fa-house icon"></i></Link>
             <svg class="gemini-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
   <path fill="currentColor" d="M11.606 2.062a.453.453 0 0 1 .788 0l2.364 4.54a8.47 8.47 0 0 0 4.646 4.646l4.54 2.364a.453.453 0 0 1 0 .788l-4.54 2.364a8.47 8.47 0 0 0-4.646 4.646l-2.364 4.54a.453.453 0 0 1-.788 0l-2.364-4.54a8.47 8.47 0 0 0-4.646-4.646l-4.54-2.364a.453.453 0 0 1 0-.788l4.54-2.364a8.47 8.47 0 0 0 4.646-4.646l2.364-4.54Z"/>
 </svg>
             <i className="fa-solid fa-people-group icon"></i>
-            <i className="fa-regular fa-comment-dots icon"></i>
+            <Link to="/components/dash/mssg"><i className="fa-regular fa-comment-dots icon"></i></Link>
             <i className="fa-solid fa-list-check icon"></i>
             <i className="fa-solid fa-gear icon"></i>
           </div>
@@ -57,6 +58,8 @@ export default function Dash() {
               <Route index element={<Navigate to="homedash"/>}/>
               <Route path="homedash" element={<Homedash/>}/>
               <Route path="create" element={<Createproject/>}/>
+              <Route path="view" element={<Viewall/>}/>
+                    <Route path="mssg" element={<Message/>}/>
             </Routes>
           </div>
           <div className="absolute inset-0 bg-black/20 -z-10"></div>
