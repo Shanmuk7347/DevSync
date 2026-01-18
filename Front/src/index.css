@@ -1,51 +1,140 @@
 @tailwind base;
 @tailwind components;
-@layer components{
-  .bn{
-    @apply text-center flex items-center justify-center  h-[5vh] w-[15vw] rounded-md text-white
-           shadow-md 
-          shadow-black/30 
-               hover:brightness-110 
-               text-white px-6 py-2 rounded-xl transition
-               hover:scale-105
+@tailwind utilities;
+
+/* ========================= */
+/* BASE STYLES */
+/* ========================= */
+@layer base {
+  body {
+    @apply transition-colors duration-300;
   }
-  .icon{
-    @apply hover:text-sky-500 sm:text-xl text-sm
+}
+
+/* ========================= */
+/* COMPONENT CLASSES */
+/* ========================= */
+@layer components {
+
+  /* ===== Shared Buttons ===== */
+  .bn {
+    @apply text-center flex items-center justify-center
+           h-[5vh] w-[15vw] min-w-[120px]
+           rounded-xl
+           text-white font-semibold text-sm
+           shadow-lg shadow-black/25
+           transition-all duration-200
+           hover:brightness-110
+           hover:scale-[1.04]
+           active:scale-[0.97];
   }
-  .part{
-     @apply flex flex-col h-[25vh] sm:h-[41vh] w-full lg:w-1/3 gap-1  m-1 shadow-md border border-black rounded-2xl shadow-black/40 
+
+  .btn-primary {
+    @apply rounded-lg bg-indigo-600 px-5 py-2 text-sm font-semibold text-white
+           shadow-md hover:bg-indigo-700 hover:shadow-lg transition;
   }
-  .im{
-   @apply sm:h-[22vh] h-auto w-[100em] sm:rounded-t-2xl rounded-t-md bg-cover
+
+  /* ===== Inputs & Forms ===== */
+  /* Standard Input */
+  .input {
+    @apply w-full h-11 rounded-xl px-4 text-sm
+           bg-slate-100 border border-transparent
+           text-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500
+           dark:bg-slate-800 dark:border-slate-700 dark:text-white
+           transition-all;
   }
-  .sub{
-   @apply  flex flex-col items-center gap-1
+
+  /* Disabled/ReadOnly Input */
+  .inputdisabled {
+    @apply w-full h-11 rounded-xl px-4 text-sm
+           bg-slate-200/50 text-slate-500
+           dark:bg-slate-950 dark:text-slate-600
+           cursor-not-allowed border-none;
   }
-    .no-scrollbar::-webkit-scrollbar {
+
+  /* ===== Dashboard Cards (part) ===== */
+  .part {
+    @apply flex flex-col h-[25vh] sm:h-[41vh] w-full lg:w-1/3
+           m-1 gap-1 rounded-2xl border border-black/10
+           shadow-lg shadow-black/30 overflow-hidden
+           transition-all duration-300 hover:-translate-y-1 hover:shadow-xl
+           bg-white dark:bg-slate-800 dark:border-white/10;
+  }
+
+  .im {
+    @apply sm:h-[22vh] w-full object-cover rounded-t-2xl
+           transition-all duration-300;
+  }
+
+  .part:hover .im {
+    @apply scale-105 brightness-90;
+  }
+
+  /* ===== Chat Components ===== */
+  .chat-msg {
+    @apply max-w-[75%] px-4 py-3 rounded-2xl text-sm shadow-sm;
+  }
+
+  .chat-msg-user {
+    @apply ml-auto bg-blue-500 text-white rounded-tr-none;
+  }
+
+  .chat-msg-ai {
+    @apply mr-auto bg-white text-gray-800 rounded-tl-none 
+           dark:bg-slate-700 dark:text-gray-100 border border-slate-100 dark:border-slate-600;
+  }
+
+  /* ===== Settings Toggle Switch ===== */
+  .toggle {
+    @apply relative inline-flex h-6 w-11 items-center rounded-full 
+           bg-slate-300 dark:bg-slate-700 transition-colors focus:outline-none;
+  }
+
+  .toggle-on {
+    @apply bg-indigo-600 dark:bg-blue-500;
+  }
+
+  .toggle-thumb {
+    @apply inline-block h-4 w-4 transform rounded-full bg-white 
+           transition-transform translate-x-1 shadow-sm;
+  }
+
+  .toggle-on .toggle-thumb {
+    @apply translate-x-6;
+  }
+
+  /* ===== UI Helpers ===== */
+  .hea {
+    @apply text-slate-900 dark:text-white text-lg font-bold
+           flex items-center pl-2 pt-2 h-[43px] tracking-tight;
+  }
+
+  .course {
+    @apply bg-slate-200/60 dark:bg-slate-700/50
+           px-3 py-1 text-xs font-bold rounded-lg cursor-pointer
+           transition-all duration-200 uppercase tracking-tighter
+           hover:bg-orange-500/20 hover:text-orange-600;
+  }
+
+  /* ===== Scrollbar Hiding ===== */
+  .no-scrollbar::-webkit-scrollbar {
     display: none;
-  }
-  .input{
-    @apply w-full h-11
-            bg-black/5
-            rounded-md
-            text-center
-            focus:outline-none
-            focus:ring-2 focus:ring-sky-500
   }
 
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  .hide{
-    @apply text-black/50 text-sm  mb-2
+
+  /* ===== Loader ===== */
+  .loader {
+    @apply w-5 h-5 rounded-full border-2 border-slate-300/30 border-t-white animate-spin;
   }
-  .course{
-    @apply bg-gray-200/60 w-auto px-1 m-1 hover:bg-orange-500/20 rounded-md
-  }
- .hea {
-  @apply text-black text-xl  flex justify-start items-start pl-2 pt-2 h-[43px] font-sans  tracking-tight ;
 }
 
+/* ========================= */
+/* KEYFRAMES */
+/* ========================= */
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
-@tailwind utilities

@@ -1,20 +1,30 @@
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useState } from "react";
 import Home from "./components/Home";
-import Login from "./components/Login"
-import Register from "./components/register";
-import Forgot from "./components/forgot";
+
+
 import Dash from "./components/Dash";
 
 export default function Component() {
+//  const token =localStorage.getItem("token")
+ 
+  const [alert,setalert]=useState("")
   return (
     <div >
+    
     <Routes>
       <Route index element={<Navigate to="home" />} />
-       <Route path="home" element={<Home />} />
-      <Route path="login" element={<Login />} />
-      <Route path="register" element={<Register />} />
-      <Route path="forgot" element={<Forgot/>} />
-       <Route path="dash/*" element={<Dash/>} />
+       <Route path="home/*" element={<Home alert={alert} setalert={setalert}/>} />
+     
+   
+      
+    <Route path="dash/*" element={<Dash alert={alert} setalert={setalert} />} />
+ 
+    <Route
+      path="dash/*"
+      element={<Navigate to="/components/home/login" replace />}
+    />
+  
     </Routes></div>
   );
 }
