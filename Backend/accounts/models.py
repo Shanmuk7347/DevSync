@@ -14,7 +14,7 @@ class CustomUser(AbstractUser):
         ("advanced", "Advanced")
     ]
     experience = models.CharField(max_length=25, choices=LEVELS, default="beginner")
-    profile_picture = models.ImageField(blank=True, null=True, upload_to="profiles/")
-
+    role = models.CharField(max_length=50, null=True, blank=True, default="")
+    
     def __str__(self):
         return self.username

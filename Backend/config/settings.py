@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.17.2.10", "10.17.3.72.nip.io", "*"]
 
 
 # Application definition
@@ -46,12 +46,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_rest_passwordreset',
+    "corsheaders",
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'dj_rest_auth',
     'dj_rest_auth.registration',
+    
     "cryptography", 
     'accounts',
     'devsync',
@@ -63,21 +66,36 @@ AUTHENTICATION_BACKENDS = [
     'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
-ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = False
 
 ACCOUNT_SIGNUP_FIELDS = [
     'email*',
     'password1*',
     'password2*',
 ]
-
+ACCOUNT_USERNAME_REQUIRED = False
+ACCOUNT_EMAIL_REQUIRED = True
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        },
+        'OAUTH_PKCE_ENABLED': True, 
+        'FETCH_USERINFO': True,
     }
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://10.17.3.72.nip.io:3000",
+]
 
 
 MIDDLEWARE = [
@@ -88,8 +106,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "allauth.account.middleware.AccountMiddleware"
+    "allauth.account.middleware.AccountMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware"
 ]
+
+
+CORS_ALLOW_ALL_ORIGINS = True #development
 
 ROOT_URLCONF = 'config.urls'
 
@@ -114,7 +137,6 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-# backend/core/settings.py
 
 DATABASES = {
     'default': {
@@ -167,8 +189,6 @@ STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -185,6 +205,28 @@ REST_FRAMEWORK = {
 from datetime import timedelta
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=12),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
+
+REST_AUTH = {
+    'REGISTER_SERIALIZER': 'api.serializers.accounts.CustomUserregisterSerializer',
+    'USE_JWT': True,
+    'JWT_AUTH_COOKIE': 'devsync-auth',
+    'JWT_AUTH_REFRESH_COOKIE': 'devsync-refresh-token',
+}
+
+#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' #For Testing
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True  # Encrypts the email
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER") 
+
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') 
+
+#For OAuth
+FRONTEND_URL = "http://10.17.3.72:3000"
