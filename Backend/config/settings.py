@@ -149,6 +149,10 @@ DATABASES = {
     )
 }
 
+DATABASES['default']['OPTIONS'] = {
+    'init_command': 'SET SESSION sql_require_primary_key=0;',
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
