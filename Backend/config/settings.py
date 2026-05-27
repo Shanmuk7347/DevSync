@@ -13,6 +13,10 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+import pymysql
+import dj_database_url
+
+pymysql.install_as_MySQLdb()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +33,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == "True"
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.17.2.10", "10.17.3.72.nip.io", "*"]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -94,7 +98,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    "http://10.17.3.72.nip.io:3000",
+    "https://*.vercel.app",
+    "http://localhost:3000",
 ]
 
 
@@ -111,8 +116,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware"
 ]
 
-
-CORS_ALLOW_ALL_ORIGINS = True #development
+CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'config.urls'
 
@@ -139,14 +143,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'devsync_db',      
-        'USER': os.getenv('USER'),            
-        'PASSWORD':os.getenv('PASSWORD'), 
-        'HOST': 'localhost',       
-        'PORT': '3306',           
-    }
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL'),
+        conn_max_age=600,
+    )
 }
 
 
@@ -229,4 +229,4 @@ EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD') 
 
 #For OAuth
-FRONTEND_URL = "http://10.17.3.72:3000"
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:3000")
