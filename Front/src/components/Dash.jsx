@@ -33,55 +33,61 @@ export default function Dash({ alert, setalert }) {
   const [light, setlight] = useState(false);
   const dash = light ? dashl : Dashd;
   const fetchedRef = useRef(false);
+  const ligh=localStorage.getItem("light")
 
   useEffect(() => {
     if (fetchedRef.current) return;
     fetchedRef.current = true;
-
+  
     const fetchData = async () => {
-      try {
-        const projectRes = await api.get(`${process.env.REACT_APP_API_URL}projects/`);
+  try {
+    const projectRes = await api.get(`${process.env.REACT_APP_API_URL}projects/`);
 
-        const formattedProjects = projectRes.data.map((project) => ({
-          id: project.id,
-          title: project.title,
-          description: project.description,
-          techStack: project.skills_req || [],
-          category: [project.difficulty_level],
-          rolesNeeded: project.role ? [project.role] : [],
-          postedBy: project.leader?.username || "Unknown",
-          updated: new Date(project.updated_on).toLocaleDateString(),
-          joined: project.is_applied,
-          reqstatus: project.request_status,
-          status: project.status,
-        }));
+    const formattedProjects = projectRes.data.map((project) => ({
+      id: project.id,
+      title: project.title,
+      description: project.description,
+      techStack: project.skills_req || [],
+      category: [project.difficulty_level],
+      rolesNeeded: project.role ? [project.role] : [],
+      postedBy: project.leader?.username || "Unknown",
+      updated: new Date(project.updated_on).toLocaleDateString(),
+      joined: project.is_applied,
+      reqstatus: project.request_status,
+      status: project.status,
+    }));
 
-        setprojects(formattedProjects);
+    setprojects(formattedProjects);
 
-        const profileRes = await api.get(`${process.env.REACT_APP_API_URL}profile/`);
-        const u = profileRes.data;
+    const profileRes = await api.get(`${process.env.REACT_APP_API_URL}profile/`);
+    const u = profileRes.data;
 
-        setuser({
-          username: u.username ?? "",
-          email: u.email ?? "",
-          bio: u.bio ?? "",
-          skills: Array.isArray(u.skills) ? u.skills : [],
-          experience: u.experience ?? "",
-          level: (u.level ?? "").toLowerCase(),
-          role: u.role ?? "",
-        });
-      } catch (err) {
-        setalert(err.message || "Something went wrong");
-        setTimeout(() => setalert(""), 2000);
-      }
-    };
+    setuser({
+      username: u.username ?? "",
+      email: u.email ?? "",
+      bio: u.bio ?? "",
+      skills: Array.isArray(u.skills) ? u.skills : [],
+      experience: u.experience ?? "",
+      level: (u.level ?? "").toLowerCase(),
+      role: u.role ?? "",
+    });
+  } catch (err) {
+    // UPDATED: Send object with message and type
+    setalert({ 
+      msg: err.message || "Something went wrong", 
+      type: "danger" 
+    });
 
+    // Clear the alert after 2 seconds
+    setTimeout(() => setalert(null), 2000);
+  }
+};
     fetchData();
-  }, [setalert]);
+  }, [setalert,light]);
 
   return (
     /* Top level container toggles 'dark' class */
-    <div className={`${!light ? "dark" : ""} transition-colors duration-300`}>
+    <div className={`${ligh!=="true"? "dark" : ""} transition-colors duration-300`}>
       <div className="bg-gray-200/50 dark:bg-slate-950 text-center relative min-h-screen">
         <Alert alert={alert} />
         

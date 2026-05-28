@@ -10,43 +10,66 @@ export default function Register(props) {
   if (localStorage.getItem("token")) {
     navigate("/components/dash/homedash");
   }
- 
-
 }, [navigate]);
 
-  const [user,setuser]=useState({
-    name:"",
-    email:"",
-    password1:"",
-    password2:""
-  })
-    const register = async (e) => {
-    e.preventDefault();
- try{
-    // 1 Register user
+const [user, setuser] = useState({
+  name: "",
+  email: "",
+  password1: "",
+  password2: ""
+});
+
+const register = async (e) => {
+  e.preventDefault();
+  try {
+    // 1. Register user
     await axios.post(`${process.env.REACT_APP_API_URL}auth/registration/`, {
-      username:user.name,
-      email:user.email,
-      password1:user.password1,
-      password2:user.password2
-     
+      username: user.name,
+      email: user.email,
+      password1: user.password1,
+      password2: user.password2
     });
 
-    // 2 Login immediately
+    // 2. Login immediately to get the token
     const res = await axios.post(`${process.env.REACT_APP_API_URL}auth/login/`, {
-       email:user.email,
-      password:user.password1,    });
+      email: user.email,
+      password: user.password1,
+    });
 
-    // 3️ Store JWT
+    // 3. Store JWT in Local Storage (String value)
     localStorage.setItem("token", res.data.access);
-    navigate("/components/dash/homedash")
 
-    alert("Registered & logged in");
- }catch (error) {
-     props.setalert(error.message)
-    setTimeout(()=>{props.setalert("")},2000)
+    // 4. Success Alert
+    props.setalert({ 
+      msg: "Account created! Redirecting...", 
+      type: "success" 
+    });
+
+    // 5. Navigate
+    setTimeout(() => {
+      navigate("/components/dash/homedash");
+    }, 1500);
+
+  } catch (error) {
+    // Extract deep error messages (e.g., password validation errors from Django/FastAPI)
+    const errorData = error.response?.data;
+    let errorMsg = "Registration failed";
+
+    if (typeof errorData === 'object') {
+      // Flattening common backend error structures
+      errorMsg = Object.values(errorData).flat().join(" ") || error.message;
+    }
+
+    props.setalert({ 
+      msg: errorMsg, 
+      type: "danger" 
+    });
+
+    setTimeout(() => {
+      props.setalert(null);
+    }, 1000);
   }
-  };
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-sky-500">
@@ -174,7 +197,7 @@ export default function Register(props) {
         <div className="absolute bottom-4 text-sm text-gray-600">
            Have an account?
           <Link
-            to="/components/login"
+            to="/components/home/login"
             className="text-blue-500 hover:text-blue-700 ml-1"
           >
             Sign in

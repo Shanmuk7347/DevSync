@@ -14,34 +14,47 @@ export default function Viewall({ projects, setalert }) {
         `${process.env.REACT_APP_API_URL}projects/${request.id}/join`,
         { message: request.message }
       );
-      alert("Request sent");
-    } catch (error) {
+
+      // SUCCESS: Object-based alert
       if (setalert) {
-        setalert(error.response?.data?.message || "Failed to send request");
+        setalert({ 
+          msg: "Request sent successfully! The project leader will review it.", 
+          type: "success" 
+        });
+      }
+
+    } catch (error) {
+      // ERROR: Object-based alert with backend message
+      if (setalert) {
+        setalert({ 
+          msg: error.response?.data?.message || "Failed to send request", 
+          type: "danger" 
+        });
       }
     } finally {
       setshow(null);
+      // Auto-clear alert
+      if (setalert) {
+        setTimeout(() => setalert(null), 3000);
+      }
     }
   };
 
-  // Logic with Type-Guards to prevent ".toLowerCase is not a function" errors
+  // Optimized filtering with null-checks
   const filteredProjects = projects.filter((project) => {
     const query = search.toLowerCase();
     
+    // Helper to safely check string contains
+    const includesQuery = (val) => 
+      typeof val === 'string' && val.toLowerCase().includes(query);
+
     return (
-      (typeof project.title === 'string' && project.title.toLowerCase().includes(query)) ||
-      (typeof project.description === 'string' && project.description.toLowerCase().includes(query)) ||
-      // Safeguard for Tech Stack array
-      project.techStack?.some((tech) => 
-        typeof tech === 'string' && tech.toLowerCase().includes(query)
-      ) ||
-      // Safeguard for Roles Needed array
-      project.rolesNeeded?.some((role) => 
-        typeof role === 'string' && role.toLowerCase().includes(query)
-      )
+      includesQuery(project.title) ||
+      includesQuery(project.description) ||
+      project.techStack?.some(includesQuery) ||
+      project.rolesNeeded?.some(includesQuery)
     );
   });
-
   const dataToRender = search ? filteredProjects : projects;
 
   return (

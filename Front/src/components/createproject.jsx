@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import api from "./axios";
 
-export default function Createproject() {
+export default function Createproject({setalert}) {
   const [mem, setmem] = useState(1);
   const [project, setproject] = useState({
     title: "",
@@ -33,41 +33,54 @@ export default function Createproject() {
 
   const handlesubmit = async (e) => {
     e.preventDefault();
-    try {
-      const payload = {
-        title: project.title,
-        description: project.description,
-        project_type: project.teamtype,
-        difficulty_level: project.level.toLowerCase(),
-        skills_req: project.skillsrequired
-          .split(",")
-          .map((skill) => skill.trim())
-          .filter(Boolean),
-        ...(project.memberemail.map((m) => m.trim()).filter(Boolean).length > 0 && {
-          members_email: project.memberemail,
-        }),
-      };
-
-      const res = await api.post(
-        `${process.env.REACT_APP_API_URL}ownprojects/`,
-        payload
-      );
-
-      console.log("SUCCESS:", res.data);
-      setproject({
-        title: "",
-        level: "",
-        description: "",
-        teamtype: "",
-        memberemail: [""],
-        skillsrequired: "",
-      });
-      setmem(1);
-    } catch (err) {
-      console.error("BACKEND ERROR:", err.response?.data);
-    }
+   try {
+  const payload = {
+    title: project.title,
+    description: project.description,
+    project_type: project.teamtype,
+    difficulty_level: project.level.toLowerCase(),
+    skills_req: project.skillsrequired
+      .split(",")
+      .map((skill) => skill.trim())
+      .filter(Boolean),
+    ...(project.memberemail.map((m) => m.trim()).filter(Boolean).length > 0 && {
+      members_email: project.memberemail,
+    }),
   };
 
+ await api.post(
+    `${process.env.REACT_APP_API_URL}ownprojects/`,
+    payload
+  );
+
+  // 1. SHOW SUCCESS ALERT
+  setalert({ msg: "Project created successfully!", type: "success" });
+
+  setproject({
+    title: "",
+    level: "",
+    description: "",
+    teamtype: "",
+    memberemail: [""],
+    skillsrequired: "",
+  });
+  setmem(1);
+
+} catch (err) {
+  // 2. EXTRACT DETAILED ERROR MESSAGE
+  // Checks if backend sent a specific error message, otherwise uses default
+  const errorMessage = err.response?.data?.detail || 
+                       err.response?.data?.message || 
+                       "Failed to create project";
+
+  // 3. SHOW ERROR ALERT
+  setalert({ msg: `Error: ${errorMessage}`, type: "danger" });
+  
+  console.error("BACKEND ERROR:", err.response?.data);
+} finally {
+  // Optional: Auto-hide after 3 seconds
+  setTimeout(() => setalert(null), 3000);
+}}
   // Reusable input style class to avoid repetition
   const inputClass = `w-full px-4 py-3 rounded-xl border transition-all duration-200 
     bg-white dark:bg-slate-700 

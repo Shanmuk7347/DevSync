@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { X, Loader2, User, Search, Send, Check, Folder, Award, Info } from "lucide-react"; 
 import api from "./axios";
 
-export default function FindPartner() {
+export default function FindPartner({setalert}) {
   const [partners, setPartners] = useState([]);
   const [myProjects, setMyProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -20,10 +20,7 @@ export default function FindPartner() {
   const [expFilter, setExpFilter] = useState("Experience Level");
 
   useEffect(() => {
-    fetchPartners();
-  }, []);
-
-  const fetchPartners = async () => {
+    const fetchPartners = async () => {
     try {
       const res = await api.get(`${process.env.REACT_APP_API_URL}findpartner/`);
       const formatted = res.data.map((user) => ({
@@ -35,11 +32,22 @@ export default function FindPartner() {
       }));
       setPartners(formatted);
     } catch (error) {
+      // Show error alert if partners fail to load
+      setalert({ 
+        msg: "Could not load potential partners.", 
+        type: "danger" 
+      });
       console.error("Fetch partners error:", error);
     } finally {
       setLoading(false);
+      // Auto-hide alert after a delay
+      setTimeout(() => setalert(null), 3000);
     }
   };
+    fetchPartners();
+  }, [setalert]);
+
+  
 
   const fetchMyProjects = async (partner) => {
     setConnectPartner(partner);
@@ -48,10 +56,14 @@ export default function FindPartner() {
       const res = await api.get(`${process.env.REACT_APP_API_URL}ownprojects/`);
       setMyProjects(Array.isArray(res.data) ? res.data : []);
     } catch (error) {
-      console.error("Fetch own projects error:", error);
+      setalert({ 
+        msg: "Failed to retrieve your projects list.", 
+        type: "danger" 
+      });
       setMyProjects([]);
     } finally {
       setProjectsLoading(false);
+      setTimeout(() => setalert(null), 3000);
     }
   };
 
@@ -63,17 +75,29 @@ export default function FindPartner() {
         user_id: connectPartner.id,
         project_id: selectedProject.id,
       });
-      alert(`Invitation sent to ${connectPartner.username} `);
+
+      // SUCCESS: Using the emerald-green theme
+      setalert({ 
+        msg: `Invitation sent to ${connectPartner.username}!`, 
+        type: "success" 
+      });
+
       setConnectPartner(null);
       setSelectedProject(null);
       setInviteMessage("");
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to send invitation");
+      // ERROR: Using the red theme
+      const errorMsg = error.response?.data?.message || error.response?.data?.detail || "Failed to send invitation";
+      setalert({ 
+        msg: errorMsg, 
+        type: "danger" 
+      });
     } finally {
       setConnecting(false);
+      // Ensure the alert clears
+      setTimeout(() => setalert(null), 4000);
     }
   };
-
   const filteredPartners = partners.filter(p => {
     const matchesSearch = p.skills.some(s => s.toLowerCase().includes(searchTerm.toLowerCase())) || 
                           p.username.toLowerCase().includes(searchTerm.toLowerCase());

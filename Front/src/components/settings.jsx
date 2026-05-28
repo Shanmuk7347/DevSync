@@ -12,60 +12,90 @@ export default function Settings(props) {
   const [skillText, setSkillText] = useState(props.user?.skills?.join(", ") || "");
 
   // Sync local text if user skills change from outside
-  useEffect(() => {
-    if (props.user?.skills) {
-      setSkillText(props.user.skills.join(", "));
-    }
-  }, [props.user?.skills]);
+ useEffect(() => {
+  if (props.user?.skills) {
+    setSkillText(props.user.skills.join(", "));
+  }
+}, [props.user?.skills]);
 
-  const handleSkillChange = (e) => {
-    const val = e.target.value;
-    setSkillText(val);
+const handleSkillChange = (e) => {
+  const val = e.target.value;
+  setSkillText(val);
+  
+  // Parse skills into array and update parent state
+  const skillArray = val.split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
     
-    // Parse skills into array and update parent state
-    const skillArray = val.split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
-      
-    props.setuser({ ...props.user, skills: skillArray });
-  };
+  props.setuser({ ...props.user, skills: skillArray });
+};
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    if (change.p1 !== change.p2) {
-      props.setalert("New passwords do not match");
-      return;
-    }
-    try {
-      await api.put(`${process.env.REACT_APP_API_URL}change/`, {
-        old_password: change.old,
-        new_password1: change.p1,
-        new_password2: change.p2
-      });
-      props.setalert("Password updated successfully");
-      setChange({ old: "", p1: "", p2: "" });
-    } catch (error) {
-      props.setalert("Error: Current password incorrect");
-    }
-  };
+const handlePasswordChange = async (e) => {
+  e.preventDefault();
+  
+  // 1. Validation check with the new Alert Object
+  if (change.p1 !== change.p2) {
+    props.setalert({ 
+      msg: "New passwords do not match", 
+      type: "danger" 
+    });
+    return;
+  }
 
-  const handleSaveProfile = async (e) => {
-    if (e) e.preventDefault();
-    try {
-      await api.patch(`${process.env.REACT_APP_API_URL}profile/`, {
-        username: props.user.username,
-        bio: props.user.bio,
-        skills: props.user.skills,
-        role: props.user.role,
-        experience: props.user.experience,
-      });
-      props.setalert("Profile saved successfully");
-      setIsEditing(false);
-    } catch (error) {
-      props.setalert(error.message || "Failed to update profile");
-    }
-  };
+  try {
+    await api.put(`${process.env.REACT_APP_API_URL}change/`, {
+      old_password: change.old,
+      new_password1: change.p1,
+      new_password2: change.p2
+    });
 
+    // 2. Success Alert
+    props.setalert({ 
+      msg: "Password updated successfully", 
+      type: "success" 
+    });
+    
+    // Reset form fields
+    setChange({ old: "", p1: "", p2: "" });
+
+  } catch (error) {
+    // 3. Error Alert (Old password incorrect)
+    props.setalert({ 
+      msg: "Error: Current password incorrect", 
+      type: "danger" 
+    });
+  } finally {
+    setTimeout(() => props.setalert(null), 3000);
+  }
+};
+
+const handleSaveProfile = async (e) => {
+  if (e) e.preventDefault();
+  try {
+    await api.patch(`${process.env.REACT_APP_API_URL}profile/`, {
+      username: props.user.username,
+      bio: props.user.bio,
+      skills: props.user.skills, // Already parsed into array by handleSkillChange
+      role: props.user.role,
+      experience: props.user.experience,
+    });
+
+    props.setalert({ 
+      msg: "Profile saved successfully", 
+      type: "success" 
+    });
+    
+    setIsEditing(false);
+
+  } catch (error) {
+    props.setalert({ 
+      msg: error.message || "Failed to update profile", 
+      type: "danger" 
+    });
+  } finally {
+    setTimeout(() => props.setalert(null), 3000);
+  }
+};
   if (!props.user) return <div className="p-10 dark:text-white">Loading profile...</div>;
 
   // UI Component Styles
@@ -194,7 +224,9 @@ export default function Settings(props) {
                 <p className="text-xs text-slate-500">Switch between light and dark themes</p>
               </div>
               <button 
-                onClick={() => props.setlight(!props.light)} 
+                onClick={() => {props.setlight(!props.light);
+                  localStorage.setItem("light",!props.light)
+                }} 
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${!props.light ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"}`}
               >
                 <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${!props.light ? "translate-x-6" : "translate-x-1"}`} />

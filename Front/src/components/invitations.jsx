@@ -3,7 +3,7 @@ import { Check, X, Loader2, Mail, ArrowLeft, Inbox, Briefcase, ChevronDown, Chev
 import { useNavigate } from "react-router-dom";
 import api from "./axios";
 
-export const Invitations = () => {
+export const Invitations = (props) => {
   const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
@@ -12,38 +12,43 @@ export const Invitations = () => {
 
   useEffect(() => {
     const fetchInvites = async () => {
-      try {
-        // Fetch invitations and project details in parallel
-        const [invitesRes, projectsRes] = await Promise.all([
-          api.get(`${process.env.REACT_APP_API_URL}invites/received/`),
-          api.get(`${process.env.REACT_APP_API_URL}projects/`)
-        ]);
+    try {
+      // Fetch invitations and project details in parallel
+      const [invitesRes, projectsRes] = await Promise.all([
+        api.get(`${process.env.REACT_APP_API_URL}invites/received/`),
+        api.get(`${process.env.REACT_APP_API_URL}projects/`)
+      ]);
 
-        const receivedInvites = Array.isArray(invitesRes.data) ? invitesRes.data : [];
-        const allProjects = Array.isArray(projectsRes.data) ? projectsRes.data : [];
+      const receivedInvites = Array.isArray(invitesRes.data) ? invitesRes.data : [];
+      const allProjects = Array.isArray(projectsRes.data) ? projectsRes.data : [];
 
-        // Merge project details into invitation objects
-        const mergedData = receivedInvites.map(invite => {
-          const projectDetails = allProjects.find(p => p.id === invite.project_id);
-          return {
-            ...invite,
-            description: projectDetails?.description || "No description available.",
-            skills_req: projectDetails?.skills_req || [],
-            difficulty: projectDetails?.difficulty_level || "Not specified"
-          };
-        });
+      const mergedData = receivedInvites.map(invite => {
+        const projectDetails = allProjects.find(p => p.id === invite.project_id);
+        return {
+          ...invite,
+          description: projectDetails?.description || "No description available.",
+          skills_req: projectDetails?.skills_req || [],
+          difficulty: projectDetails?.difficulty_level || "Not specified"
+        };
+      });
 
-        setInvites(mergedData);
-      } catch (error) {
-        console.error("Failed to sync invitations and projects:", error);
-        setInvites([]);
-      } finally {
-        setLoading(false);
-      }
-    };
+      setInvites(mergedData);
+    } catch (error) {
+      console.error("Failed to sync invitations and projects:", error);
+      // Show error alert if sync fails
+      props.setalert({ 
+        msg: "Failed to load invitations", 
+        type: "danger" 
+      });
+      setInvites([]);
+    } finally {
+      setLoading(false);
+      setTimeout(() => props.setalert(null), 3000);
+    }
+  };
 
     fetchInvites();
-  }, []);
+  }, [props]);
 
   const handleAction = async (id, status) => {
     setActionLoading(id);
@@ -51,13 +56,26 @@ export const Invitations = () => {
       await api.post(`${process.env.REACT_APP_API_URL}invites/${id}/manage/`, {
         action: status,
       });
+
       // Filter out the processed invite
       setInvites((prev) => prev.filter((inv) => inv.id !== id));
+
+      // SUCCESS: Dynamic message based on action (Accept/Reject)
+      props.setalert({ 
+        msg: `Invitation ${status === 'accept' ? 'accepted' : 'declined'} successfully!`, 
+        type: "success" 
+      });
+
     } catch (error) {
       console.error("Management error:", error);
-      alert(error.response?.data?.message || "Failed to update invitation");
+      // ERROR: Show backend error or fallback
+      props.setalert({ 
+        msg: error.response?.data?.message || "Failed to update invitation", 
+        type: "danger" 
+      });
     } finally {
       setActionLoading(null);
+      setTimeout(() => props.setalert(null), 3000);
     }
   };
 

@@ -13,21 +13,36 @@ export default function Forgot(props) {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await api.post(
-        `${process.env.REACT_APP_API_URL}password-reset/`,
-        { email: mail }
-      );
+  const res = await api.post(
+    `${process.env.REACT_APP_API_URL}password-reset/`,
+    { email: mail }
+  );
 
-      // Checking for common success patterns
-      if (res.data.status === "OK" || res.status === 200) {
-        setreset(true);
-      }
-    } catch (error) {
-      props.setalert(error.response?.data?.message || "No user exists with this email");
-      setTimeout(() => props.setalert(""), 3000);
-    } finally {
-      setLoading(false);
-    }
+  // Checking for common success patterns
+  if (res.data.status === "OK" || res.status === 200) {
+    setreset(true);
+    
+    // Success alert: Informs user to check email
+    props.setalert({ 
+      msg: "Password reset link sent to your email!", 
+      type: "success" 
+    });
+  }
+} catch (error) {
+  // Error alert: Red background for invalid emails
+  const errorMsg = error.response?.data?.detail || 
+                   error.response?.data?.message || 
+                   "No user exists with this email";
+                   
+  props.setalert({ 
+    msg: errorMsg, 
+    type: "danger" 
+  });
+} finally {
+  setLoading(false);
+  // Auto-clear the alert after 3 seconds
+  setTimeout(() => props.setalert(null), 3000);
+}
   };
 
   // Shared classes for consistent styling in both views

@@ -9,22 +9,43 @@ export default function Reset(props) {
   const [upass, setpass] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handlesubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      await api.post(`${process.env.REACT_APP_API_URL}password-reset/confirm/`, {
-        password: upass,
-        token: token,
-      });
-      props.setalert("Password reset successful!");
+ const handlesubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  try {
+    await api.post(`${process.env.REACT_APP_API_URL}password-reset/confirm/`, {
+      password: upass,
+      token: token,
+    });
+
+    // SUCCESS: Emerald alert
+    props.setalert({ 
+      msg: "Password reset successful! You can now log in.", 
+      type: "success" 
+    });
+
+    // Wait 2 seconds so the user sees the success message before redirecting
+    setTimeout(() => {
       navigate("/components/home/login");
-    } catch (error) {
-      props.setalert(error.response?.data?.message || "Invalid or expired link");
-    } finally {
-      setLoading(false);
-    }
-  };
+    }, 2000);
+
+  } catch (error) {
+    // ERROR: Red alert for expired or invalid tokens
+    const errorMsg = error.response?.data?.detail || 
+                     error.response?.data?.message || 
+                     "Invalid or expired link";
+
+    props.setalert({ 
+      msg: errorMsg, 
+      type: "danger" 
+    });
+    
+    // Clear error after 4 seconds
+    setTimeout(() => props.setalert(null), 4000);
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-sky-500 relative overflow-hidden transition-colors duration-300">

@@ -18,7 +18,6 @@ export default function ProjectsDone(props) {
         user_id: memberId
       });
 
-      // Update local state
       const updateList = (prev) => ({
         ...prev,
         members: prev.members.filter((m) => m.id !== memberId),
@@ -26,9 +25,16 @@ export default function ProjectsDone(props) {
 
       setSelectedProject(updateList);
       setEditableProject(updateList);
-      props.setalert("Member removed successfully");
+
+      // Success: Green alert
+      props.setalert({ msg: "Member removed successfully", type: "success" });
     } catch (error) {
-      props.setalert(error.response?.data?.message || "Failed to remove member");
+      props.setalert({ 
+        msg: error.response?.data?.message || "Failed to remove member", 
+        type: "danger" 
+      });
+    } finally {
+      setTimeout(() => props.setalert(null), 3000);
     }
   };
 
@@ -40,9 +46,16 @@ export default function ProjectsDone(props) {
       await api.delete(`${process.env.REACT_APP_API_URL}projects/${projectId}/`);
       setprojects((prev) => prev.filter((p) => p.id !== projectId));
       setSelectedProject(null);
-      props.setalert("Project deleted successfully");
+      
+      // Success: Green alert
+      props.setalert({ msg: "Project deleted successfully", type: "success" });
     } catch (error) {
-      props.setalert(error.response?.data?.message || "Failed to delete project");
+      props.setalert({ 
+        msg: error.response?.data?.message || "Failed to delete project", 
+        type: "danger" 
+      });
+    } finally {
+      setTimeout(() => props.setalert(null), 3000);
     }
   };
 
@@ -52,10 +65,12 @@ export default function ProjectsDone(props) {
         const res = await api.get(`${process.env.REACT_APP_API_URL}ownprojects/`);
         setprojects(res.data);
       } catch (error) {
-        props.setalert(error.message || "Failed to load projects");
+        props.setalert({ msg: "Failed to load projects", type: "danger" });
+        setTimeout(() => props.setalert(null), 3000);
       }
     };
     fetchProjects();
+    // Using props.setalert specifically to avoid unnecessary re-renders
   }, [props]);
 
   const saveProjectChanges = async () => {
@@ -72,9 +87,16 @@ export default function ProjectsDone(props) {
       setprojects((prev) => prev.map((p) => (p.id === editableProject.id ? res.data : p)));
       setSelectedProject(res.data);
       setEditMode(false);
-      props.setalert("Project updated successfully");
+      
+      // Success: Green alert
+      props.setalert({ msg: "Project updated successfully", type: "success" });
     } catch (error) {
-      props.setalert(error.response?.data?.message || "Failed to update project");
+      props.setalert({ 
+        msg: error.response?.data?.message || "Failed to update project", 
+        type: "danger" 
+      });
+    } finally {
+      setTimeout(() => props.setalert(null), 3000);
     }
   };
 

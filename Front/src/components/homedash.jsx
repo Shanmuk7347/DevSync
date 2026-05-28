@@ -69,7 +69,15 @@ export default function Homedash(props) {
         setnotifications(formatted);
       } catch (error) {
         // Safe access to props.setalert
-        if (props.setalert) props.setalert("Failed to load notifications");
+       if (props.setalert) {
+  props.setalert({ 
+    msg: "Failed to load notifications", 
+    type: "danger" 
+  });
+  
+  // Optional: manual timeout if you haven't added auto-dismiss to the Alert component yet
+  setTimeout(() => props.setalert(null), 3000);
+}
       }
     };
 

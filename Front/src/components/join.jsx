@@ -12,58 +12,79 @@ export default function JoinRequests(props) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchInitialData = async () => {
-      setLoading(true);
-      try {
-        const [projectsRes, usersRes] = await Promise.all([
-          api.get(`${process.env.REACT_APP_API_URL}ownprojects/`),
-          api.get(`${process.env.REACT_APP_API_URL}findpartner/`)
-        ]);
-
-        const ownProjects = projectsRes.data;
-        setAllUsers(usersRes.data);
-
-        const responses = await Promise.all(
-          ownProjects.map((project) =>
-            api.get(`${process.env.REACT_APP_API_URL}projects/${project.id}/requests`)
-          )
-        );
-
-        const allRequests = responses.flatMap((r) => r.data);
-        setRequests(allRequests);
-      } catch (error) {
-        props.setalert(error.message || "Failed to load data");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchInitialData();
-  }, [props]); 
-
-  const handleAction = async (id, status) => {
-    setActionLoading(id);
+  const fetchInitialData = async () => {
+    setLoading(true);
     try {
-      await api.post(`${process.env.REACT_APP_API_URL}requests/${id}/manage`, {
-        action: status,
-      });
-      setRequests((prev) => prev.filter((req) => req.id !== id));
-      props.setalert(`Request ${status}ed successfully`);
+      const [projectsRes, usersRes] = await Promise.all([
+        api.get(`${process.env.REACT_APP_API_URL}ownprojects/`),
+        api.get(`${process.env.REACT_APP_API_URL}findpartner/`)
+      ]);
+
+      const ownProjects = projectsRes.data;
+      setAllUsers(usersRes.data);
+
+      const responses = await Promise.all(
+        ownProjects.map((project) =>
+          api.get(`${process.env.REACT_APP_API_URL}projects/${project.id}/requests`)
+        )
+      );
+
+      const allRequests = responses.flatMap((r) => r.data);
+      setRequests(allRequests);
     } catch (error) {
-      props.setalert(error.response?.data?.message || "Failed to update request");
+      // Error: Red alert for data sync failure
+      props.setalert({ 
+        msg: error.message || "Failed to load dashboard data", 
+        type: "danger" 
+      });
+      setTimeout(() => props.setalert(null), 3000);
     } finally {
-      setActionLoading(null);
+      setLoading(false);
     }
   };
 
-  const openProfile = (applicantId) => {
-    const user = allUsers.find(u => u.id === applicantId);
-    if (user) {
-      setSelectedProfile(user);
-    } else {
-      props.setalert("Profile details not found");
-    }
-  };
+  fetchInitialData();
+  // Note: Be careful with [props] dependency; usually [props.setalert] is safer
+}, [props]); 
+
+const handleAction = async (id, status) => {
+  setActionLoading(id);
+  try {
+    await api.post(`${process.env.REACT_APP_API_URL}requests/${id}/manage`, {
+      action: status,
+    });
+    
+    setRequests((prev) => prev.filter((req) => req.id !== id));
+    
+    // Success: Emerald alert for accepting/rejecting
+    props.setalert({ 
+      msg: `Request ${status}ed successfully`, 
+      type: "success" 
+    });
+  } catch (error) {
+    props.setalert({ 
+      msg: error.response?.data?.message || "Failed to update request", 
+      type: "danger" 
+    });
+  } finally {
+    setActionLoading(null);
+    setTimeout(() => props.setalert(null), 3000);
+  }
+};
+
+const openProfile = (applicantId) => {
+  const user = allUsers.find(u => u.id === applicantId);
+  if (user) {
+    setSelectedProfile(user);
+  } else {
+    // Error: If profile search fails
+    props.setalert({ 
+      msg: "Profile details not found", 
+      type: "danger" 
+    });
+    setTimeout(() => props.setalert(null), 3000);
+  }
+};
 
   if (loading) {
     return (

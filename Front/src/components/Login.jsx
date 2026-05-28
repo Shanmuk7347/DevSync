@@ -1,87 +1,102 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 // 1. IMPORT THE HOOK
 import { useGoogleLogin } from "@react-oauth/google"; 
 
 export default function Login(props) {
   const navigate = useNavigate();
-  const location = useLocation();
+  
+  useEffect(() => {
+
+    if (localStorage.getItem("token")) {
+
+      navigate("/components/dash/homedash");
+
+    }
+
+  }, [navigate]);
+  const [user, setuser] = useState({
+
+    email: "",
+
+    password: "",
+
+  });
+
+
 
   // --- REMOVED THE HARDCODED googleResponse OBJECT HERE ---
 
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      navigate("/components/dash/homedash");
-    }
-  }, [navigate]);
-
-  const [user, setuser] = useState({
-    email: "",
-    password: "",
-  });
-
-  // --- 2. NEW GOOGLE LOGIN LOGIC ---
   const handleGoogleLogin = useGoogleLogin({
-    flow: "auth-code", // CRITICAL: This requests the 'code' for your backend
+    flow: "auth-code",
     
     onSuccess: async (codeResponse) => {
-      console.log("Google Code Received:", codeResponse);
-      
       try {
-        // 3. CORRECT AXIOS SYNTAX (No JSON.stringify needed)
         const res = await axios.post(
           `${process.env.REACT_APP_API_URL}auth/google/`,
           {
             code: codeResponse.code,
-            // Must match your Backend settings EXACTLY
             callback_url: "http://10.17.3.72.nip.io:3000" 
           }
         );
 
-        console.log("Backend Response:", res.data);
-
-        // Save token and redirect
-        // Note: dj-rest-auth usually returns { key: "..." } or { access: "...", refresh: "..." }
-        // Check your console.log to see if it is res.data.key or res.data.access
         const token = res.data.access || res.data.key; 
-        
         localStorage.setItem("token", token);
-        alert("Logged in with Google!");
-        navigate("/components/dash/homedash");
+
+        // SUCCESS: Object-based alert
+        props.setalert({ 
+          msg: "Google Login Successful!", 
+          type: "success" 
+        });
+
+        // Delay navigation slightly so user sees the success alert
+        setTimeout(() =>{ navigate("/components/dash/homedash");props.setalert(null)}, 1200);
 
       } catch (error) {
-  // Add this to see the EXACT error from your backend
-  if (error.response) {
-    console.error("Backend Error Data:", error.response.data);
-    console.error("Backend Error Status:", error.response.status);
-  }
-  props.setalert("Google Login Failed");
-}
+        if (error.response) {
+          console.error("Backend Error Data:", error.response.data);
+        }
+        // ERROR: Object-based alert
+        props.setalert({ 
+          msg: "Google Authentication failed. Please try again.", 
+          type: "danger" 
+        });
+        setTimeout(() => props.setalert(null), 3000);
+      }
     },
-    onError: (error) => console.log("Login Failed:", error),
+    onError: (error) => {
+      props.setalert({ msg: "Google login was cancelled", type: "danger" });
+    },
   });
-  // ------------------------------------------------
 
   const handlesubmit = async (e) => {
     e.preventDefault();
     try {
       const res = await axios.post(`${process.env.REACT_APP_API_URL}auth/login/`, {
-        username: user.email, // specific to your backend logic
+        username: user.email, 
         email: user.email,
         password: user.password,
       });
 
-      // Check if your backend returns 'access' or 'key'
       localStorage.setItem("token", res.data.access || res.data.key);
-      navigate("/components/dash/homedash");
-      alert("logged in");
+
+      // SUCCESS: Object-based alert
+      props.setalert({ msg: "Welcome back!", type: "success" });
+
+      setTimeout(() => navigate("/components/dash/homedash"), 1000);
+      
     } catch (error) {
-      props.setalert("Wrong credentials");
+      // ERROR: Improved error messaging
+      const errorMsg = error.response?.status === 401 
+        ? "Invalid email or password" 
+        : "Login failed. Please check your connection.";
+
+      props.setalert({ msg: errorMsg, type: "danger" });
+      
       setTimeout(() => {
-        props.setalert("");
-      }, 2000);
-      console.log(error);
+        props.setalert(null);
+      }, 3000);
     }
   };
 
@@ -153,7 +168,7 @@ export default function Login(props) {
 
         <div className="absolute bottom-4 text-sm text-gray-600">
           Don't have an account?
-          <Link to="/components/register" className="text-blue-500 hover:text-blue-700 ml-1">
+          <Link to="/components/home/register" className="text-blue-500 hover:text-blue-700 ml-1">
             Sign up
           </Link>
         </div>

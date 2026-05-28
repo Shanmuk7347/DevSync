@@ -2,13 +2,13 @@ import React, { useEffect, useState } from "react";
 import { Users, Shield, User, X, LogOut, AlertCircle, Loader2 } from "lucide-react";
 import api from "./axios";
 
-export default function TeamsParticipated() {
+export default function TeamsParticipated(props) {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [leaving, setLeaving] = useState(false);
 
-  useEffect(() => {
+ useEffect(() => {
     const fetchTeams = async () => {
       try {
         const res = await api.get(`${process.env.REACT_APP_API_URL}myprojects/`);
@@ -25,14 +25,21 @@ export default function TeamsParticipated() {
 
         setTeams(formatted);
       } catch (error) {
+        // Red alert for failure to load teams
+        props.setalert({ 
+          msg: "Failed to load your teams", 
+          type: "danger" 
+        });
         console.error(error);
       } finally {
         setLoading(false);
+        // Clean up alert after 3 seconds
+        setTimeout(() => props.setalert(null), 3000);
       }
     };
 
     fetchTeams();
-  }, []);
+  }, [props]); // Added proper dependency
 
   const quitTeam = async () => {
     if (!selectedTeam) return;
@@ -46,12 +53,26 @@ export default function TeamsParticipated() {
         project_id: selectedTeam.id,
       });
 
+      // Update UI by removing the team from local state
       setTeams((prev) => prev.filter((t) => t.id !== selectedTeam.id));
       setSelectedTeam(null);
+
+      // SUCCESS Alert
+      props.setalert({ 
+        msg: `Successfully left the team: ${selectedTeam.name}`, 
+        type: "success" 
+      });
+
     } catch (error) {
-      alert(error.response?.data?.message || "Failed to leave team");
+      // DANGER Alert for backend failure
+      const errorMsg = error.response?.data?.message || "Failed to leave team";
+      props.setalert({ 
+        msg: errorMsg, 
+        type: "danger" 
+      });
     } finally {
       setLeaving(false);
+      setTimeout(() => props.setalert(null), 3000);
     }
   };
 
