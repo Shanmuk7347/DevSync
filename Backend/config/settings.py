@@ -63,7 +63,6 @@ INSTALLED_APPS = [
     'accounts',
     'devsync',
     'api',
-    'corsheaders',
 ]
 
 AUTHENTICATION_BACKENDS = [
