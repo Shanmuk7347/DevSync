@@ -33,7 +33,11 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG") == "True"
 
+<<<<<<< HEAD
 ALLOWED_HOSTS = ["*"]
+=======
+ALLOWED_HOSTS = ['*']
+>>>>>>> 23aeb99 (corrected navigation)
 
 
 # Application definition
@@ -63,6 +67,7 @@ INSTALLED_APPS = [
     'accounts',
     'devsync',
     'api',
+    'corsheaders',
 ]
 
 AUTHENTICATION_BACKENDS = [
@@ -105,6 +110,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -205,6 +211,18 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
+REST_USE_JWT = True
+
+ACCOUNT_EMAIL_VERIFICATION = "none"
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_REQUIRED = True
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+]
 
 from datetime import timedelta
 
