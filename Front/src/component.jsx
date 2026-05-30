@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useState } from "react";
+import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./components/Home";
 
 
@@ -18,7 +19,17 @@ export default function Component() {
      
    
       
-    <Route path="dash/*" element={<Dash alert={alert} setalert={setalert} />} />
+    <Route
+  path="dash/*"
+  element={
+    <ProtectedRoute>
+      <Dash
+        alert={alert}
+        setalert={setalert}
+      />
+    </ProtectedRoute>
+  }
+/>
  
     <Route
       path="dash/*"

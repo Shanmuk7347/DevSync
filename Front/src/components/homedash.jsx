@@ -7,7 +7,7 @@ import explore from "../images/explore.jpeg";
 import Profile from "../images/profile.avif";
 import api from "./axios";
 
-export default function Homedash(props) {
+export default function Homedash({alert,setalert}) {
   const navigate = useNavigate();
   const [show, setshow] = useState(null);
   const [request, setresquest] = useState({ message: "", id: "" });
@@ -68,28 +68,28 @@ export default function Homedash(props) {
         }));
         setnotifications(formatted);
       } catch (error) {
-        // Safe access to props.setalert
-       if (props.setalert) {
-  props.setalert({ 
+        // Safe access to setalert
+       if (setalert) {
+  setalert({ 
     msg: "Failed to load notifications", 
     type: "danger" 
   });
   
   // Optional: manual timeout if you haven't added auto-dismiss to the Alert component yet
-  setTimeout(() => props.setalert(null), 3000);
+  setTimeout(() => setalert(null), 3000);
 }
       }
     };
 
     fetchNotifications();
-  }, [props]); // Dependency warning resolved
+  }, [{alert,setalert}]); // Dependency warning resolved
 
   const sendrequest = async (e) => {
     try {
       await api.post(`${process.env.REACT_APP_API_URL}projects/${request.id}/join`, { message: request.message });
       alert("Request sent");
     } catch (error) {
-      props.setalert(error.response?.data?.message || "Failed to send request");
+      setalert(error.response?.data?.message || "Failed to send request");
     } finally {
       setshow(null);
     }
@@ -104,7 +104,7 @@ export default function Homedash(props) {
     <div className="px-4 sm:px-6 lg:px-12 h-full overflow-y-auto no-scrollbar relative z-10 transition-colors duration-300">
       {/* HEADER - Updated text-slate-900 for Light Mode visibility */}
       <div className="text-slate-900 dark:text-white text-xl sm:text-2xl text-center py-6">
-        <h1 className="font-bold">Welcome, {props.user.username}</h1>
+        <h1 className="font-bold">Welcome, {{alert,setalert}.user.username}</h1>
         <span className="block text-sm text-slate-600 dark:text-white/80 italic">Let’s find the best coding partner for you</span>
       </div>
 
@@ -147,10 +147,10 @@ export default function Homedash(props) {
               </div>
 
               <div className="space-y-3 max-h-[35vh] overflow-y-auto no-scrollbar pr-2">
-                {props.projects.filter(p => p.status !== "closed").length === 0 ? (
+                {{alert,setalert}.projects.filter(p => p.status !== "closed").length === 0 ? (
                   <div className="text-center text-slate-400 dark:text-slate-600 py-10 italic">No active projects</div>
                 ) : (
-                  props.projects.filter(e => e.status !== "closed").slice(0, 4).map((project, ind) => (
+                  {alert,setalert}.projects.filter(e => e.status !== "closed").slice(0, 4).map((project, ind) => (
                     <div key={ind} className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors">
                       <div className="flex items-center gap-3">
                         <img src={Profile} className="h-10 w-10 rounded-full border border-slate-200 dark:border-slate-600" alt="user" />

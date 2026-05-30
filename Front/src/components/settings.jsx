@@ -3,20 +3,20 @@ import { PencilLine, LogOut, ShieldCheck, UserCircle, BellRing, Save, XCircle } 
 import { useNavigate } from "react-router-dom";
 import api from "./axios";
 
-export default function Settings(props) {
+export default function Settings({alert,setalert,user,setuser,setlight}) {
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [change, setChange] = useState({ old: "", p1: "", p2: "" });
   
   // Local state for the skills text field to prevent cursor jumping
-  const [skillText, setSkillText] = useState(props.user?.skills?.join(", ") || "");
+  const [skillText, setSkillText] = useState(user?.skills?.join(", ") || "");
 
   // Sync local text if user skills change from outside
  useEffect(() => {
-  if (props.user?.skills) {
-    setSkillText(props.user.skills.join(", "));
+  if (user?.skills) {
+    setSkillText(user.skills.join(", "));
   }
-}, [props.user?.skills]);
+}, [user?.skills]);
 
 const handleSkillChange = (e) => {
   const val = e.target.value;
@@ -27,7 +27,7 @@ const handleSkillChange = (e) => {
     .map((s) => s.trim())
     .filter(Boolean);
     
-  props.setuser({ ...props.user, skills: skillArray });
+  setuser({ ...user, skills: skillArray });
 };
 
 const handlePasswordChange = async (e) => {
@@ -35,7 +35,7 @@ const handlePasswordChange = async (e) => {
   
   // 1. Validation check with the new Alert Object
   if (change.p1 !== change.p2) {
-    props.setalert({ 
+    setalert({ 
       msg: "New passwords do not match", 
       type: "danger" 
     });
@@ -50,7 +50,7 @@ const handlePasswordChange = async (e) => {
     });
 
     // 2. Success Alert
-    props.setalert({ 
+    setalert({ 
       msg: "Password updated successfully", 
       type: "success" 
     });
@@ -60,12 +60,12 @@ const handlePasswordChange = async (e) => {
 
   } catch (error) {
     // 3. Error Alert (Old password incorrect)
-    props.setalert({ 
+    setalert({ 
       msg: "Error: Current password incorrect", 
       type: "danger" 
     });
   } finally {
-    setTimeout(() => props.setalert(null), 3000);
+    setTimeout(() => setalert(null), 3000);
   }
 };
 
@@ -73,14 +73,14 @@ const handleSaveProfile = async (e) => {
   if (e) e.preventDefault();
   try {
     await api.patch(`${process.env.REACT_APP_API_URL}profile/`, {
-      username: props.user.username,
-      bio: props.user.bio,
-      skills: props.user.skills, // Already parsed into array by handleSkillChange
-      role: props.user.role,
-      experience: props.user.experience,
+      username: user.username,
+      bio: user.bio,
+      skills: user.skills, // Already parsed into array by handleSkillChange
+      role: user.role,
+      experience: user.experience,
     });
 
-    props.setalert({ 
+    setalert({ 
       msg: "Profile saved successfully", 
       type: "success" 
     });
@@ -88,15 +88,15 @@ const handleSaveProfile = async (e) => {
     setIsEditing(false);
 
   } catch (error) {
-    props.setalert({ 
+    setalert({ 
       msg: error.message || "Failed to update profile", 
       type: "danger" 
     });
   } finally {
-    setTimeout(() => props.setalert(null), 3000);
+    setTimeout(() => setalert(null), 3000);
   }
 };
-  if (!props.user) return <div className="p-10 dark:text-white">Loading profile...</div>;
+  if (!user) return <div className="p-10 dark:text-white">Loading profile...</div>;
 
   // UI Component Styles
   const sectionClass = "bg-white/90 dark:bg-slate-900/90 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 transition-all duration-300";
@@ -155,24 +155,24 @@ const handleSaveProfile = async (e) => {
                 <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">Username</label>
                 <input 
                   className={`${inputBase} ${isEditing ? inputActive : inputDisabled}`} 
-                  value={props.user.username || ""} 
+                  value={user.username || ""} 
                   readOnly={!isEditing} 
-                  onChange={(e) => props.setuser({ ...props.user, username: e.target.value })} 
+                  onChange={(e) => setuser({ ...user, username: e.target.value })} 
                 />
               </div>
 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">Email (Private)</label>
-                <input className={`${inputBase} ${inputDisabled}`} value={props.user.email || ""} readOnly />
+                <input className={`${inputBase} ${inputDisabled}`} value={user.email || ""} readOnly />
               </div>
 
               <div className="space-y-1">
                 <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">Bio</label>
                 <input 
                   className={`${inputBase} ${isEditing ? inputActive : inputDisabled}`} 
-                  value={props.user.bio || ""} 
+                  value={user.bio || ""} 
                   readOnly={!isEditing} 
-                  onChange={(e) => props.setuser({ ...props.user, bio: e.target.value })} 
+                  onChange={(e) => setuser({ ...user, bio: e.target.value })} 
                 />
               </div>
 
@@ -180,9 +180,9 @@ const handleSaveProfile = async (e) => {
                 <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">Job Role</label>
                 <input 
                   className={`${inputBase} ${isEditing ? inputActive : inputDisabled}`} 
-                  value={props.user.role || ""} 
+                  value={user.role || ""} 
                   readOnly={!isEditing} 
-                  onChange={(e) => props.setuser({ ...props.user, role: e.target.value })} 
+                  onChange={(e) => setuser({ ...user, role: e.target.value })} 
                 />
               </div>
 
@@ -201,9 +201,9 @@ const handleSaveProfile = async (e) => {
                 <label className="text-[10px] font-bold uppercase text-slate-400 ml-1">Experience Level</label>
                 <select 
                   className={`${inputBase} ${isEditing ? inputActive : inputDisabled}`} 
-                  value={props.user.experience || ""} 
+                  value={user.experience || ""} 
                   disabled={!isEditing} 
-                  onChange={(e) => props.setuser({ ...props.user, experience: e.target.value })}
+                  onChange={(e) =>setuser({ ...user, experience: e.target.value })}
                 >
                   <option value="beginner">Beginner</option>
                   <option value="intermediate">Intermediate</option>
@@ -224,12 +224,12 @@ const handleSaveProfile = async (e) => {
                 <p className="text-xs text-slate-500">Switch between light and dark themes</p>
               </div>
               <button 
-                onClick={() => {props.setlight(!props.light);
-                  localStorage.setItem("light",!props.light)
+                onClick={() => {setlight(!{alert,setalert}.light);
+                  localStorage.setItem("light",!{alert,setalert}.light)
                 }} 
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${!props.light ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"}`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${!{alert,setalert}.light ? "bg-blue-600" : "bg-slate-300 dark:bg-slate-700"}`}
               >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${!props.light ? "translate-x-6" : "translate-x-1"}`} />
+                <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${!{alert,setalert}.light ? "translate-x-6" : "translate-x-1"}`} />
               </button>
             </div>
           </section>

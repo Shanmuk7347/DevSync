@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Users, Shield, User, X, LogOut, AlertCircle, Loader2 } from "lucide-react";
 import api from "./axios";
 
-export default function TeamsParticipated(props) {
+export default function TeamsParticipated({alert,setalert}) {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTeam, setSelectedTeam] = useState(null);
@@ -26,7 +26,7 @@ export default function TeamsParticipated(props) {
         setTeams(formatted);
       } catch (error) {
         // Red alert for failure to load teams
-        props.setalert({ 
+        setalert({ 
           msg: "Failed to load your teams", 
           type: "danger" 
         });
@@ -34,12 +34,12 @@ export default function TeamsParticipated(props) {
       } finally {
         setLoading(false);
         // Clean up alert after 3 seconds
-        setTimeout(() => props.setalert(null), 3000);
+        setTimeout(() => setalert(null), 3000);
       }
     };
 
     fetchTeams();
-  }, [props]); // Added proper dependency
+  }, [{alert,setalert}]); // Added proper dependency
 
   const quitTeam = async () => {
     if (!selectedTeam) return;
@@ -58,7 +58,7 @@ export default function TeamsParticipated(props) {
       setSelectedTeam(null);
 
       // SUCCESS Alert
-      props.setalert({ 
+      setalert({ 
         msg: `Successfully left the team: ${selectedTeam.name}`, 
         type: "success" 
       });
@@ -66,13 +66,13 @@ export default function TeamsParticipated(props) {
     } catch (error) {
       // DANGER Alert for backend failure
       const errorMsg = error.response?.data?.message || "Failed to leave team";
-      props.setalert({ 
+      setalert({ 
         msg: errorMsg, 
         type: "danger" 
       });
     } finally {
       setLeaving(false);
-      setTimeout(() => props.setalert(null), 3000);
+      setTimeout(() => setalert(null), 3000);
     }
   };
 

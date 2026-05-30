@@ -3,7 +3,7 @@ import api from "./axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { Lock, ShieldCheck, ArrowRight, Loader2 } from "lucide-react";
 
-export default function Reset(props) {
+export default function Reset({alert,setalert}) {
   const navigate = useNavigate();
   const { token } = useParams(); // Destructure token correctly from params
   const [upass, setpass] = useState("");
@@ -19,7 +19,7 @@ export default function Reset(props) {
     });
 
     // SUCCESS: Emerald alert
-    props.setalert({ 
+    setalert({ 
       msg: "Password reset successful! You can now log in.", 
       type: "success" 
     });
@@ -35,13 +35,13 @@ export default function Reset(props) {
                      error.response?.data?.message || 
                      "Invalid or expired link";
 
-    props.setalert({ 
+    setalert({ 
       msg: errorMsg, 
       type: "danger" 
     });
     
     // Clear error after 4 seconds
-    setTimeout(() => props.setalert(null), 4000);
+    setTimeout(() => setalert(null), 4000);
   } finally {
     setLoading(false);
   }

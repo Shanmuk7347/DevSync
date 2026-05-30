@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "./axios";
 import { PencilLine, Trash2, X, Check, Users, FolderCheck, AlertCircle } from "lucide-react";
 
-export default function ProjectsDone(props) {
+export default function ProjectsDone({alert,setalert}) {
   const [projects, setprojects] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [editableProject, setEditableProject] = useState(null);
@@ -27,14 +27,14 @@ export default function ProjectsDone(props) {
       setEditableProject(updateList);
 
       // Success: Green alert
-      props.setalert({ msg: "Member removed successfully", type: "success" });
+      setalert({ msg: "Member removed successfully", type: "success" });
     } catch (error) {
-      props.setalert({ 
+      setalert({ 
         msg: error.response?.data?.message || "Failed to remove member", 
         type: "danger" 
       });
     } finally {
-      setTimeout(() => props.setalert(null), 3000);
+      setTimeout(() => setalert(null), 3000);
     }
   };
 
@@ -48,14 +48,14 @@ export default function ProjectsDone(props) {
       setSelectedProject(null);
       
       // Success: Green alert
-      props.setalert({ msg: "Project deleted successfully", type: "success" });
+      setalert({ msg: "Project deleted successfully", type: "success" });
     } catch (error) {
-      props.setalert({ 
+      setalert({ 
         msg: error.response?.data?.message || "Failed to delete project", 
         type: "danger" 
       });
     } finally {
-      setTimeout(() => props.setalert(null), 3000);
+      setTimeout(() => setalert(null), 3000);
     }
   };
 
@@ -65,13 +65,13 @@ export default function ProjectsDone(props) {
         const res = await api.get(`${process.env.REACT_APP_API_URL}ownprojects/`);
         setprojects(res.data);
       } catch (error) {
-        props.setalert({ msg: "Failed to load projects", type: "danger" });
-        setTimeout(() => props.setalert(null), 3000);
+        setalert({ msg: "Failed to load projects", type: "danger" });
+        setTimeout(() => setalert(null), 3000);
       }
     };
     fetchProjects();
-    // Using props.setalert specifically to avoid unnecessary re-renders
-  }, [props]);
+    // Using setalert specifically to avoid unnecessary re-renders
+  }, [{alert,setalert}]);
 
   const saveProjectChanges = async () => {
     try {
@@ -89,14 +89,14 @@ export default function ProjectsDone(props) {
       setEditMode(false);
       
       // Success: Green alert
-      props.setalert({ msg: "Project updated successfully", type: "success" });
+      setalert({ msg: "Project updated successfully", type: "success" });
     } catch (error) {
-      props.setalert({ 
+      setalert({ 
         msg: error.response?.data?.message || "Failed to update project", 
         type: "danger" 
       });
     } finally {
-      setTimeout(() => props.setalert(null), 3000);
+      setTimeout(() => setalert(null), 3000);
     }
   };
 

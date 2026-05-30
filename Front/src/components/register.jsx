@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 
 
-export default function Register(props) {
+export default function Register({alert,setalert}) {
   const navigate=useNavigate();
   useEffect(() => {
   if (localStorage.getItem("token")) {
@@ -40,7 +40,7 @@ const register = async (e) => {
     localStorage.setItem("token", res.data.access);
 
     // 4. Success Alert
-    props.setalert({ 
+    setalert({ 
       msg: "Account created! Redirecting...", 
       type: "success" 
     });
@@ -48,7 +48,7 @@ const register = async (e) => {
     // 5. Navigate
     setTimeout(() => {
       navigate("/components/dash/homedash");
-    }, 1500);
+    }, 1000);
 
   } catch (error) {
     // Extract deep error messages (e.g., password validation errors from Django/FastAPI)
@@ -60,13 +60,13 @@ const register = async (e) => {
       errorMsg = Object.values(errorData).flat().join(" ") || error.message;
     }
 
-    props.setalert({ 
+    setalert({ 
       msg: errorMsg, 
       type: "danger" 
     });
 
     setTimeout(() => {
-      props.setalert(null);
+      setalert(null);
     }, 1000);
   }
 };

@@ -3,7 +3,7 @@ import { Check, X, Loader2, User, ArrowLeft, Inbox, Folder, Eye, Mail, Award } f
 import { useNavigate } from "react-router-dom";
 import api from "./axios";
 
-export default function JoinRequests(props) {
+export default function JoinRequests({alert,setalert}) {
   const [requests, setRequests] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
   const [selectedProfile, setSelectedProfile] = useState(null);
@@ -33,19 +33,19 @@ export default function JoinRequests(props) {
       setRequests(allRequests);
     } catch (error) {
       // Error: Red alert for data sync failure
-      props.setalert({ 
+      setalert({ 
         msg: error.message || "Failed to load dashboard data", 
         type: "danger" 
       });
-      setTimeout(() => props.setalert(null), 3000);
+      setTimeout(() => setalert(null), 3000);
     } finally {
       setLoading(false);
     }
   };
 
   fetchInitialData();
-  // Note: Be careful with [props] dependency; usually [props.setalert] is safer
-}, [props]); 
+  // Note: Be careful with [{alert,setalert}] dependency; usually [setalert] is safer
+}, [{alert,setalert}]); 
 
 const handleAction = async (id, status) => {
   setActionLoading(id);
@@ -57,18 +57,18 @@ const handleAction = async (id, status) => {
     setRequests((prev) => prev.filter((req) => req.id !== id));
     
     // Success: Emerald alert for accepting/rejecting
-    props.setalert({ 
+    setalert({ 
       msg: `Request ${status}ed successfully`, 
       type: "success" 
     });
   } catch (error) {
-    props.setalert({ 
+    setalert({ 
       msg: error.response?.data?.message || "Failed to update request", 
       type: "danger" 
     });
   } finally {
     setActionLoading(null);
-    setTimeout(() => props.setalert(null), 3000);
+    setTimeout(() => setalert(null), 3000);
   }
 };
 
@@ -78,11 +78,11 @@ const openProfile = (applicantId) => {
     setSelectedProfile(user);
   } else {
     // Error: If profile search fails
-    props.setalert({ 
+    setalert({ 
       msg: "Profile details not found", 
       type: "danger" 
     });
-    setTimeout(() => props.setalert(null), 3000);
+    setTimeout(() => setalert(null), 3000);
   }
 };
 

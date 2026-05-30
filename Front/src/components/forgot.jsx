@@ -3,7 +3,7 @@ import api from "./axios";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Mail, Loader2, CheckCircle } from "lucide-react";
 
-export default function Forgot(props) {
+export default function Forgot({alert,setalert}) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [isreset, setreset] = useState(false);
@@ -23,7 +23,7 @@ export default function Forgot(props) {
     setreset(true);
     
     // Success alert: Informs user to check email
-    props.setalert({ 
+    setalert({ 
       msg: "Password reset link sent to your email!", 
       type: "success" 
     });
@@ -34,14 +34,14 @@ export default function Forgot(props) {
                    error.response?.data?.message || 
                    "No user exists with this email";
                    
-  props.setalert({ 
+  setalert({ 
     msg: errorMsg, 
     type: "danger" 
   });
 } finally {
   setLoading(false);
   // Auto-clear the alert after 3 seconds
-  setTimeout(() => props.setalert(null), 3000);
+  setTimeout(() => setalert(null), 3000);
 }
   };
 

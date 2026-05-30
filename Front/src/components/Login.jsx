@@ -4,7 +4,7 @@ import { Link, useNavigate} from "react-router-dom";
 // 1. IMPORT THE HOOK
 import { useGoogleLogin } from "@react-oauth/google"; 
 
-export default function Login(props) {
+export default function Login({alert,setalert}) {
   const navigate = useNavigate();
   
   useEffect(() => {
@@ -45,28 +45,28 @@ export default function Login(props) {
         localStorage.setItem("token", token);
 
         // SUCCESS: Object-based alert
-        props.setalert({ 
+        setalert({ 
           msg: "Google Login Successful!", 
           type: "success" 
         });
 
         // Delay navigation slightly so user sees the success alert
-        setTimeout(() =>{ navigate("/components/dash/homedash");props.setalert(null)}, 1200);
+        setTimeout(() =>{ navigate("/components/dash/homedash");setalert(null)}, 1200);
 
       } catch (error) {
         if (error.response) {
           console.error("Backend Error Data:", error.response.data);
         }
         // ERROR: Object-based alert
-        props.setalert({ 
+        setalert({ 
           msg: "Google Authentication failed. Please try again.", 
           type: "danger" 
         });
-        setTimeout(() => props.setalert(null), 3000);
+        setTimeout(() => setalert(null), 3000);
       }
     },
     onError: (error) => {
-      props.setalert({ msg: "Google login was cancelled", type: "danger" });
+      setalert({ msg: "Google login was cancelled", type: "danger" });
     },
   });
 
@@ -82,7 +82,7 @@ export default function Login(props) {
       localStorage.setItem("token", res.data.access || res.data.key);
 
       // SUCCESS: Object-based alert
-      props.setalert({ msg: "Welcome back!", type: "success" });
+      setalert({ msg: "Welcome back!", type: "success" });
 
       setTimeout(() => navigate("/components/dash/homedash"), 1000);
       
@@ -92,10 +92,10 @@ export default function Login(props) {
         ? "Invalid email or password" 
         : "Login failed. Please check your connection.";
 
-      props.setalert({ msg: errorMsg, type: "danger" });
+      setalert({ msg: errorMsg, type: "danger" });
       
       setTimeout(() => {
-        props.setalert(null);
+        setalert(null);
       }, 3000);
     }
   };

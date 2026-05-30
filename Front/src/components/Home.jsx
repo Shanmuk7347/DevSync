@@ -7,28 +7,28 @@ import Forgot from "./forgot";
 import Alert from "./alerts";
 import Reset from "./rest";
 
-export default function Home(props) {
+export default function Home({alert,setalert}) {
   return (
     <div className="relative">
-      <Alert alert={props.alert} />
+      <Alert alert={alert} />
       <Routes>
         <Route index element={<Navigate to="auth" />} />
         <Route path="auth" element={<Auth />} />
         <Route
           path="login"
-          element={<Login alert={props.alert} setalert={props.setalert} />}
+          element={<Login alert={alert} setalert={setalert} />}
         />
         <Route
           path="register"
-          element={<Register alert={props.alert} setalert={props.setalert} />}
+          element={<Register alert={alert} setalert={setalert} />}
         />
         <Route
           path="forgot"
-          element={<Forgot alert={props.alert} setalert={props.setalert} />}
+          element={<Forgot alert={alert} setalert={setalert} />}
         />
          <Route
           path="reset/:token"
-          element={<Reset alert={props.alert} setalert={props.setalert} />}
+          element={<Reset alert={alert} setalert={setalert} />}
         />
       </Routes>
     </div>

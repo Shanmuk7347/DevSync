@@ -3,7 +3,7 @@ import { Check, X, Loader2, Mail, ArrowLeft, Inbox, Briefcase, ChevronDown, Chev
 import { useNavigate } from "react-router-dom";
 import api from "./axios";
 
-export const Invitations = (props) => {
+export const Invitations = ({alert,setalert}) => {
   const [invites, setInvites] = useState([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
@@ -36,19 +36,19 @@ export const Invitations = (props) => {
     } catch (error) {
       console.error("Failed to sync invitations and projects:", error);
       // Show error alert if sync fails
-      props.setalert({ 
+      setalert({ 
         msg: "Failed to load invitations", 
         type: "danger" 
       });
       setInvites([]);
     } finally {
       setLoading(false);
-      setTimeout(() => props.setalert(null), 3000);
+      setTimeout(() => setalert(null), 3000);
     }
   };
 
     fetchInvites();
-  }, [props]);
+  }, [{alert,setalert}]);
 
   const handleAction = async (id, status) => {
     setActionLoading(id);
@@ -61,7 +61,7 @@ export const Invitations = (props) => {
       setInvites((prev) => prev.filter((inv) => inv.id !== id));
 
       // SUCCESS: Dynamic message based on action (Accept/Reject)
-      props.setalert({ 
+      setalert({ 
         msg: `Invitation ${status === 'accept' ? 'accepted' : 'declined'} successfully!`, 
         type: "success" 
       });
@@ -69,13 +69,13 @@ export const Invitations = (props) => {
     } catch (error) {
       console.error("Management error:", error);
       // ERROR: Show backend error or fallback
-      props.setalert({ 
+      setalert({ 
         msg: error.response?.data?.message || "Failed to update invitation", 
         type: "danger" 
       });
     } finally {
       setActionLoading(null);
-      setTimeout(() => props.setalert(null), 3000);
+      setTimeout(() => setalert(null), 3000);
     }
   };
 
