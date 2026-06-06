@@ -37,7 +37,7 @@ export default function Login({alert,setalert}) {
           `${process.env.REACT_APP_API_URL}auth/google/`,
           {
             code: codeResponse.code,
-            callback_url: "http://10.17.3.72.nip.io:3000" 
+            callback_url: window.location.origin
           }
         );
 

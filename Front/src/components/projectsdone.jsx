@@ -71,7 +71,7 @@ export default function ProjectsDone({alert,setalert}) {
     };
     fetchProjects();
     // Using setalert specifically to avoid unnecessary re-renders
-  }, [{alert,setalert}]);
+  }, [setalert]);
 
   const saveProjectChanges = async () => {
     try {

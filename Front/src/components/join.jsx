@@ -44,8 +44,8 @@ export default function JoinRequests({alert,setalert}) {
   };
 
   fetchInitialData();
-  // Note: Be careful with [{alert,setalert}] dependency; usually [setalert] is safer
-}, [{alert,setalert}]); 
+  // Note: Be careful with [setalert] dependency; usually [setalert] is safer
+}, [setalert]); 
 
 const handleAction = async (id, status) => {
   setActionLoading(id);

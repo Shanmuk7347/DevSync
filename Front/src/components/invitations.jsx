@@ -48,7 +48,7 @@ export const Invitations = ({alert,setalert}) => {
   };
 
     fetchInvites();
-  }, [{alert,setalert}]);
+  }, [setalert]);
 
   const handleAction = async (id, status) => {
     setActionLoading(id);

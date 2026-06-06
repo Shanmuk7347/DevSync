@@ -82,7 +82,7 @@ export default function Homedash({alert,setalert}) {
     };
 
     fetchNotifications();
-  }, [{alert,setalert}]); // Dependency warning resolved
+  }, [setalert]); // Dependency warning resolved
 
   const sendrequest = async (e) => {
     try {

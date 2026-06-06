@@ -39,7 +39,7 @@ export default function TeamsParticipated({alert,setalert}) {
     };
 
     fetchTeams();
-  }, [{alert,setalert}]); // Added proper dependency
+  }, [setalert]); // Added proper dependency
 
   const quitTeam = async () => {
     if (!selectedTeam) return;
