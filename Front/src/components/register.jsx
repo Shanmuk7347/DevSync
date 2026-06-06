@@ -219,7 +219,6 @@ export default function Register({ alert, setalert }) {
         </button>
 
         <div className="text-gray-500 text-sm mt-2">or sign-up with</div>
-        <div className="text-gray-500 text-sm mt-2">or sign up with</div>
 
         <button
           type="button"
